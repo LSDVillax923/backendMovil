@@ -1,0 +1,47 @@
+Tablas necesarias
+users
+id (INT, PK, autoincremental)
+username (STRING, único, requerido)
+email (STRING, único, requerido, validación de formato)
+password (STRING, requerido)
+name (STRING, requerido)
+birthdate (DATEONLY, requerido)
+followersCount (INT, default 0)
+followingCount (INT, default 0)
+Campos automáticos createdAt y updatedAt gracias a timestamps: true
+reviews
+userId (INT, FK a users.id, requerido)
+id (INT, PK, autoincremental)
+placeName (STRING, requerido)
+reviewText (TEXT, requerido)
+likes (INT, default 0)
+comments (INT, default 0)
+parentReviewId (INT, FK opcional a reviews.id; permite respuestas en hilo)
+Sin campos de timestamp automáticos (timestamps: false)
+followers
+id (INT, PK, autoincremental)
+followerId (INT, FK a users.id, requerido)
+followingId (INT, FK a users.id, requerido)
+Esta tabla actúa como tabla intermedia para la relación muchos-a-muchos de “seguidores/seguidos” entre usuarios.
+Relaciones entre tablas
+Un usuario tiene muchas reseñas (users ↔ reviews).
+Las reseñas pertenecen a un usuario y pueden tener respuestas (autorrelación por parentReviewId).
+Los usuarios se relacionan entre sí en una relación muchos-a-muchos a través de followers.
+Todas estas relaciones se configuran en setupRelations(), antes de sincronizar el esquema.
+Datos iniciales
+Al iniciar el servidor se ejecuta sequelize.sync({ force: true }) y luego se cargan datos semilla si las tablas están vacías. Puedes reutilizar estos mismos registros para poblar la base manualmente.
+Usuarios precargados (users)
+alicej, alice@example.com, contraseña 123456, nombre “Alice Johnson”, fecha de nacimiento 1995-04-12, followersCount 120, followingCount 80
+carlosp, carlos@example.com, contraseña 123456, nombre “Carlos Pérez”, fecha 1990-07-21, followersCount 95, followingCount 110
+mariag, maria@example.com, contraseña 123456, nombre “María Gómez”, fecha 1992-11-05, followersCount 200, followingCount 150
+juanr, juan@example.com, contraseña 123456, nombre “Juan Rodríguez”, fecha 1988-02-28, followersCount 75, followingCount 60
+lauram, laura@example.com, contraseña 123456, nombre “Laura Martínez”, fecha 1997-09-15, followersCount 180, followingCount 95
+Reseñas precargadas (reviews)
+Se cargan 12 reseñas asociadas a los usuarios anteriores. Cada registro define userId, placeName, reviewText, likes, comments y parentReviewId (nulo en los ejemplos). Algunos ejemplos:
+Usuario 1 en “Gastrobar La Terraza”: “Excelente ambiente…”, likes 25, comments 6.
+Usuario 2 en “Discoteca Eclipse”: “La música estuvo genial…”, likes 18, comments 4.
+Usuario 3 en “Gastrobar El Rincón Gourmet”: “Tapas deliciosas…”, likes 22, comments 5.
+Usuario 4 en “Discoteca Prisma”: “El DJ estuvo increíble…”, likes 15, comments 3.
+Usuario 5 en “Gastrobar Sabor Urbano”: “Platos innovadores…”, likes 28, comments 7.
+…hasta completar 12 reseñas (incluyen lugares como “Discoteca Vértigo”, “Gastrobar Fusión Latina”, “Discoteca Lux”, etc.).
+Puedes insertar todas estas entradas directamente desde el arreglo initialReviews si lo deseas.
